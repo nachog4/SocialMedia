@@ -1,0 +1,8 @@
+﻿@model SocialMedia.Models.Comment
+
+<div class="w3-container w3-leftbar w3-border-blue">
+    <span onclick="this.parentElement.style.display='none'" class="w3-closebtn w3-padding">x</span>
+    <img src="img_avatar2.png" class="w3-left w3-circle" style="width:40px; margin-right: 10px;">
+    <span class="w3-medium">@Model.author</span><span> (@Model.datetime)</span><br>
+    <span>@Model.content</span>
+</div>

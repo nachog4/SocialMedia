@@ -1,0 +1,85 @@
+﻿@model SocialMedia.Models.Post
+
+<div class="w3-container w3-card-2 w3-white w3-round w3-margin w3-animate-zoom">
+
+    <!-- HEADER -->
+    <br>
+    <img src="img_avatar2.png" alt="Avatar" class="w3-left w3-circle w3-margin-right" style="width:60px">
+    <span class="w3-right w3-opacity">@Model.datetime</span>
+    <h4>@Html.DisplayFor(model => model.author)</h4><br>
+    <hr class="w3-clear">
+
+    <!-- CONTENT -->
+    <p>@Html.DisplayFor(model => model.content)</p>
+
+    <!-- VIDEO PLAYER-->
+    @{ 
+        if (Model.content.Contains("youtu.be/") || Model.content.Contains("youtube.com/"))
+        {
+            var youtubeMatch = new System.Text.RegularExpressions.Regex(@"youtu(?:\.be|be\.com)/(?:.*v(?:/|=)|(?:.*/)?)([a-zA-Z0-9-_]+)").Match(Model.content);
+            var videoId = ""; ;
+            if (youtubeMatch.Success)
+            {
+                videoId = youtubeMatch.Groups[1].Value;
+            }
+
+        <div class="videoWrapper">
+            <iframe style="width:100%"  src="https://www.youtube.com/embed/@videoId" frameborder="0" allowfullscreen></iframe>
+        </div>
+        <br />
+
+        }
+     }
+
+    <!-- ATTACHED IMAGES -->
+    @{
+        if (Model.AttachedImage1 != null)
+        {
+            var base64 = Convert.ToBase64String(Model.AttachedImage1);
+            var imgSrc = String.Format("data:image/gif;base64,{0}", base64);
+
+            <img src="@imgSrc" style="width:100%;cursor:pointer" class="w3-margin-bottom w3-hover-opacity" onclick="displayImageModal(this);">
+        }
+    }
+
+    <!-- LIKE/COMMENT BUTTONS -->
+    @{ 
+        var LikeButtonText = " Like";
+        var CommentButtonText = " Comment";
+        if (Model.likes > 0) { LikeButtonText = LikeButtonText + " +" + Model.likes.ToString(); }
+        if (Model.Comments.Count > 0) { CommentButtonText = CommentButtonText + "s (" + Model.Comments.Count.ToString() + ")"; }
+    }
+
+    <button type="button" class="w3-btn w3-theme-d1 w3-margin-bottom" onclick="btnLikeClicked(this, @Model.PostId)"><i class="fa fa-thumbs-up"></i>@LikeButtonText</button>
+    <button type="button" class="w3-btn w3-theme-d2 w3-margin-bottom" onclick="btnCommentClicked(@Model.PostId)"><i class="fa fa-comment"></i>@CommentButtonText</button>
+
+    <!-- COMMENTS SECTION -->
+    <div id="CommentsSection@(Model.PostId)" style="display:none; margin-bottom: 3%;">
+        <input id="txtComment@(Model.PostId)" class="w3-input w3-border-0 w3-hover-opacity w3-animate-input TxtCommentInput" type="text" placeholder="Write your comment..." 
+               style="margin-bottom:3%; width:40%" onkeydown="detectEnterComment(event, this);"/>
+        <div id="PreviousCommentsSection@(Model.PostId)">
+
+            @{ if (Model.Comments != null)
+                {
+                    foreach (SocialMedia.Models.Comment comment in Model.Comments.OrderByDescending(m => m.CommentId))
+                    {
+                        @Html.Partial("_SingleComment", comment);
+                    }
+                }
+             }
+
+        </div>
+    </div>
+
+    <!-- 2 imagenes
+        <div class="w3-row-padding" style="margin:0 -16px">
+                    <div class="w3-half">
+                    <img src="img_lights.jpg" style="width:100%;cursor:pointer" alt="Northern Lights" class="w3-margin-bottom w3-hover-opacity" onclick="displayImageModal(this)">
+                    </div>
+                    <div class="w3-half">
+                    <img src="img_nature.jpg" style="width:100%;cursor:pointer" alt="Nature" class="w3-margin-bottom w3-hover-opacity" onclick="displayImageModal(this)">
+              </div>
+        </div>
+    -->
+
+</div>
